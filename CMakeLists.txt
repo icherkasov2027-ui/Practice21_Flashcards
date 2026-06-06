@@ -13,6 +13,7 @@ qt_add_executable(Project
     mainwindow.ui
     datahandler.h
     datahandler.cpp
+    resources.qrc
 )
 
 target_link_libraries(Project

@@ -1,6 +1,9 @@
 #include "datahandler.h"
+#include <QDebug>
 
 void DataHandler::saveDecks(const QList<Deck>& decks, const QString& filename) {
+    qDebug() << "Лог: Начало сохранения данных в файл:" << filename;
+
     QJsonArray deckArray;
     for (const auto& deck : decks) {
         QJsonObject deckObj;
@@ -18,17 +21,32 @@ void DataHandler::saveDecks(const QList<Deck>& decks, const QString& filename) {
     }
     QJsonObject root;
     root["decks"] = deckArray;
+
     QFile file(filename);
     if (file.open(QIODevice::WriteOnly)) {
         file.write(QJsonDocument(root).toJson());
+        file.close();
+        qDebug() << "Лог: Успешно сохранено наборів:" << decks.size();
+    } else {
+        qCritical() << "КРИТИЧЕСКАЯ ОШИБКА: Не удалось открыть файл для записи:" << filename;
     }
 }
 
 QList<Deck> DataHandler::loadDecks(const QString& filename) {
+    qDebug() << "Лог: Попытка загрузить данные из файла:" << filename;
+
     QList<Deck> decks;
     QFile file(filename);
-    if (!file.open(QIODevice::ReadOnly)) return decks;
-    QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
+
+    if (!file.open(QIODevice::ReadOnly)) {
+        qWarning() << "Предупреждение: Файл не найден, возвращаем пустой список. Файл:" << filename;
+        return decks;
+    }
+
+    QByteArray data = file.readAll();
+    file.close();
+
+    QJsonDocument doc = QJsonDocument::fromJson(data);
     QJsonArray deckArray = doc.object()["decks"].toArray();
     for (const auto& deckVal : deckArray) {
         QJsonObject deckObj = deckVal.toObject();
@@ -41,5 +59,7 @@ QList<Deck> DataHandler::loadDecks(const QString& filename) {
         }
         decks.append(deck);
     }
+
+    qDebug() << "Лог: Успешно загружено наборів из файла:" << decks.size();
     return decks;
 }

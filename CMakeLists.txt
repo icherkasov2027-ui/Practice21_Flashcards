@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.19)
 project(Project LANGUAGES CXX)
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets)
+find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets Test)
 
 qt_standard_project_setup()
 
@@ -13,13 +13,18 @@ qt_add_executable(Project
     mainwindow.ui
     datahandler.h
     datahandler.cpp
+    testdatahandler.h
+    testdatahandler.cpp
     resources.qrc
+    testdatahandler.h
+    testdatahandler.cpp
 )
 
 target_link_libraries(Project
     PRIVATE
         Qt::Core
         Qt::Widgets
+        Qt::Test
 )
 
 include(GNUInstallDirs)
